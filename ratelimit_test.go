@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"go.uber.org/ratelimit"
-	"go.uber.org/ratelimit/internal/clock"
+	"github.com/daimeng/ratelimit"
+	"github.com/daimeng/ratelimit/internal/clock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/uber-go/atomic"
