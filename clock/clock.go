@@ -62,6 +62,13 @@ func (m *Mock) Add(d time.Duration) {
 	nap()
 }
 
+// Move moves current time of the mock clock forward in context of no timers
+func (m *Mock) Move(d time.Duration) {
+	m.Lock()
+	m.now = m.now.Add(d)
+	m.Unlock()
+}
+
 // Timer produces a timer that will emit a time some duration after now.
 func (m *Mock) Timer(d time.Duration) *Timer {
 	ch := make(chan time.Time)
