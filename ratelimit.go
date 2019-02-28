@@ -142,16 +142,17 @@ func (t *limiter) TryTake(count int) (bool, time.Time) {
 		return true, t.last
 	}
 
-	t.sleepFor += t.perRequest*time.Duration(count) - now.Sub(t.last)
+	sleepFor := t.sleepFor + t.perRequest*time.Duration(count) - now.Sub(t.last)
 
-	if t.sleepFor < t.maxSlack {
-		t.sleepFor = t.maxSlack
+	if sleepFor < t.maxSlack {
+		sleepFor = t.maxSlack
 	}
 
-	if t.sleepFor > 0 {
+	if sleepFor > 0 {
 		return false, t.last
 	}
 
+	t.sleepFor = sleepFor
 	t.last = now
 	return true, t.last
 }
