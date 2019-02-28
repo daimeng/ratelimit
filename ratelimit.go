@@ -36,7 +36,7 @@ import (
 type Limiter interface {
 	// Take should block to make sure that the RPS is met.
 	Take() time.Time
-	TryTake() (bool, time.Time)
+	TryTake(count int) (bool, time.Time)
 }
 
 // Clock is the minimum necessary interface to instantiate a rate limiter with
@@ -129,7 +129,7 @@ func (t *limiter) Take() time.Time {
 	return t.last
 }
 
-func (t *limiter) TryTake() (bool, time.Time) {
+func (t *limiter) TryTake(count int) (bool, time.Time) {
 	t.Lock()
 	defer t.Unlock()
 
@@ -141,7 +141,7 @@ func (t *limiter) TryTake() (bool, time.Time) {
 		return true, t.last
 	}
 
-	t.sleepFor += t.perRequest - now.Sub(t.last)
+	t.sleepFor += t.perRequest*time.Duration(count) - now.Sub(t.last)
 
 	if t.sleepFor < t.maxSlack {
 		t.sleepFor = t.maxSlack
@@ -166,6 +166,6 @@ func (unlimited) Take() time.Time {
 	return time.Now()
 }
 
-func (unlimited) TryTake() (bool, time.Time) {
+func (unlimited) TryTake(count int) (bool, time.Time) {
 	return true, time.Now()
 }
