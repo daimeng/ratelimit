@@ -37,6 +37,7 @@ type Limiter interface {
 	// Take should block to make sure that the RPS is met.
 	Take() time.Time
 	TryTake(count int) (bool, time.Time)
+	Reset()
 }
 
 // Clock is the minimum necessary interface to instantiate a rate limiter with
@@ -155,6 +156,13 @@ func (t *limiter) TryTake(count int) (bool, time.Time) {
 	return true, t.last
 }
 
+func (t *limiter) Reset() {
+	t.Lock()
+	t.last = time.Time{}
+	t.sleepFor = 0
+	t.Unlock()
+}
+
 type unlimited struct{}
 
 // NewUnlimited returns a RateLimiter that is not limited.
@@ -169,3 +177,5 @@ func (unlimited) Take() time.Time {
 func (unlimited) TryTake(count int) (bool, time.Time) {
 	return true, time.Now()
 }
+
+func (unlimited) Reset() {}
