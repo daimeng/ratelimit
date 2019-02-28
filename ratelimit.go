@@ -24,7 +24,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/daimeng/ratelimit/internal/clock"
+	"github.com/daimeng/ratelimit/clock"
 )
 
 // Note: This file is inspired by:
